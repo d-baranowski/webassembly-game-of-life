@@ -15,7 +15,7 @@ var cvs *canvas.Canvas2d
 
 var renderDelay = 20 * time.Millisecond
 
-var lifeState = life.Initialise()
+var lifeState = life.NewLife(400, 400)
 
 func main() {
 	FrameRate := time.Second / renderDelay
@@ -36,7 +36,7 @@ func Render(gc *draw2dimg.GraphicContext) bool {
 	gc.Clear()
 
 	start := time.Now()
-	lifeState = lifeState.Tick()
+	lifeState.Step()
 	elapsed := time.Since(start).Milliseconds()
 	println(fmt.Sprintf("Tick Duration %d ms", elapsed))
 

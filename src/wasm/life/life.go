@@ -6,143 +6,100 @@ import (
 	"math/rand"
 )
 
-const DIMENSION = 400
 
-type cell struct {
-	X int
-	Y int
+// Field represents a two-dimensional field of cells.
+type Field struct {
+	s    [][]bool
+	w, h int
 }
 
-type stateCell struct {
-	X     int
-	Y     int
-	state bool
+// NewField returns an empty field of the specified width and height.
+func NewField(w, h int) *Field {
+	s := make([][]bool, h)
+	for i := range s {
+		s[i] = make([]bool, w)
+	}
+	return &Field{s: s, w: w, h: h}
 }
 
-
-type Cells map[string]cell
-
-func (cells *Cells) Add(c cell) {
-	(*cells)[string(c.X) + " " + string(c.Y)] = c
+// Set sets the state of the specified cell to the given value.
+func (f *Field) Set(x, y int, b bool) {
+	f.s[y][x] = b
 }
 
-type life struct {
-	Cells      Cells
-	neighbours map[stateCell]int
+// Alive reports whether the specified cell is alive.
+// If the x or y coordinates are outside the field boundaries they are wrapped
+// toroidally. For instance, an x value of -1 is treated as width-1.
+func (f *Field) Alive(x, y int) bool {
+	x += f.w
+	x %= f.w
+	y += f.h
+	y %= f.h
+	return f.s[y][x]
 }
 
-/*
-Any live cell with fewer than two live neighbours dies, as if by underpopulation.
-Any live cell with more than three live neighbours dies, as if by overpopulation.
-
-Any live cell with two or three live neighbours lives on to the next generation.
-Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction
-
-for every alive cell note their neighbours and their state
-
-*/
-
-
-
-func (l *life) findNeighbours() {
-	l.neighbours = make(map[stateCell]int)
-	for _, c := range l.Cells {
-		for _, n := range c.neighbours() {
-			_, ok := l.Cells[string(n.X) + " " + string(n.Y)]
-			state := ok
-			l.neighbours[stateCell{X: n.X, Y: n.Y, state: state}]++
+// Next returns the state of the specified cell at the next time step.
+func (f *Field) Next(x, y int) bool {
+	// Count the adjacent cells that are alive.
+	alive := 0
+	for i := -1; i <= 1; i++ {
+		for j := -1; j <= 1; j++ {
+			if (j != 0 || i != 0) && f.Alive(x+i, y+j) {
+				alive++
+			}
 		}
 	}
+	// Return next state according to the game rules:
+	//   exactly 3 neighbors: on,
+	//   exactly 2 neighbors: maintain current state,
+	//   otherwise: off.
+	return alive == 3 || alive == 2 && f.Alive(x, y)
 }
 
-func (l *life) Tick() life {
-	l.findNeighbours()
+// Life stores the state of a round of Conway's Game of Life.
+type Life struct {
+	a, b *Field
+	w, h int
+}
 
-	result := life{
-		Cells:      make(map[string]cell),
-		neighbours: make(map[stateCell]int),
+// NewLife returns a new Life game state with a random initial state.
+func NewLife(w, h int) *Life {
+	a := NewField(w, h)
+	for i := 0; i < (w * h / 4); i++ {
+		a.Set(rand.Intn(w), rand.Intn(h), true)
 	}
+	return &Life{
+		a: a, b: NewField(w, h),
+		w: w, h: h,
+	}
+}
 
-	for c, neighbourCount := range l.neighbours {
-		if c.state == false && neighbourCount == 3 {
-			result.Cells.Add(cell{X: c.X, Y: c.Y})
-		} else if c.state == true && neighbourCount == 2 || neighbourCount == 3 {
-			result.Cells.Add(cell{X: c.X, Y: c.Y})
+// Step advances the game by one instant, recomputing and updating all cells.
+func (l *Life) Step() {
+	// Update the state of the next field (b) from the current field (a).
+	for y := 0; y < l.h; y++ {
+		for x := 0; x < l.w; x++ {
+			l.b.Set(x, y, l.a.Next(x, y))
 		}
 	}
-
-	return result
+	// Swap fields a and b.
+	l.a, l.b = l.b, l.a
 }
 
-func (l *life) Draw() image.Image {
-	width := DIMENSION
-	height := DIMENSION
 
+func (l *Life) Draw() image.Image {
 	upLeft := image.Point{0, 0}
-	lowRight := image.Point{width, height}
+	lowRight := image.Point{l.w, l.h}
 
 	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
 
-	for _, c := range l.Cells {
-		img.Set(c.X, c.Y, color.Black)
-	}
-
-	return img.SubImage(img.Rect)
-}
-
-func (c cell) left() cell {
-	return cell{X: c.X - 1, Y: c.Y}
-}
-
-func (c cell) right() cell {
-	return cell{X: c.X + 1, Y: c.Y}
-}
-
-func (c cell) up() cell {
-	return cell{X: c.X, Y: c.Y - 1}
-}
-
-func (c cell) down() cell {
-	return cell{X: c.X, Y: c.Y + 1}
-}
-
-func (c *cell) neighbours() []cell {
-	return []cell{
-		c.left(),
-		c.left().up(),
-		c.up(),
-		c.up().right(),
-		c.right(),
-		c.right().down(),
-		c.down(),
-		c.down().left(),
-	}
-}
-
-func getRandomNum() int {
-	min := 1
-	max := 6
-	return rand.Intn(max-min) + min
-}
-
-func Initialise() life {
-	l := life{
-		Cells:      make(map[string]cell),
-		neighbours: make(map[stateCell]int),
-	}
-
-	for i := 0; i < DIMENSION; i++ {
-		for j := 0; j < DIMENSION; j++ {
-			if getRandomNum() > 4 {
-				l.Cells.Add(cell{
-					X: i,
-					Y: j,
-				})
+	for i, x := range l.a.s {
+		for j, y := range x {
+			if y {
+				img.Set(i, j, color.Black)
 			}
 		}
 	}
 
-	return l
+	return img.SubImage(img.Rect)
 }
-
-
