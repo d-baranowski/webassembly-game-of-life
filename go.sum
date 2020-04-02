@@ -9,8 +9,8 @@ github.com/llgcode/draw2d v0.0.0-20200110163050-b96d8208fcfc h1:v8qNcPPBCFppcuCW
 github.com/llgcode/draw2d v0.0.0-20200110163050-b96d8208fcfc/go.mod h1:mVa0dA29Db2S4LVqDYLlsePDzRJLDfdhVZiI15uY0FA=
 github.com/llgcode/ps v0.0.0-20150911083025-f1443b32eedb h1:61ndUreYSlWFeCY44JxDDkngVoI7/1MVhEl98Nm0KOk=
 github.com/llgcode/ps v0.0.0-20150911083025-f1443b32eedb/go.mod h1:1l8ky+Ew27CMX29uG+a2hNOKpeNYEQjjtiALiBlFQbY=
-github.com/markfarnan/go-canvas v0.0.0-20200205132300-933a7c1291b8 h1:2GsxIzPCogamQuFDEIplbKUAbH/gDjGZlnGg4fxfDQ4=
-github.com/markfarnan/go-canvas v0.0.0-20200205132300-933a7c1291b8/go.mod h1:PqPh9d/lLHBot/ZoW4ZbZaRVLdBIHJZfPYLaC84RSI8=
+github.com/d-baranowski/webassembly-game-of-life v0.0.0-20200205132300-933a7c1291b8 h1:2GsxIzPCogamQuFDEIplbKUAbH/gDjGZlnGg4fxfDQ4=
+github.com/d-baranowski/webassembly-game-of-life v0.0.0-20200205132300-933a7c1291b8/go.mod h1:PqPh9d/lLHBot/ZoW4ZbZaRVLdBIHJZfPYLaC84RSI8=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

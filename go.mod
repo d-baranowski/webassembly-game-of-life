@@ -1,4 +1,4 @@
-module github.com/markfarnan/go-canvas
+module github.com/d-baranowski/webassembly-game-of-life
 
 go 1.13
 

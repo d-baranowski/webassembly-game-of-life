@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/llgcode/draw2d/draw2dimg"
-	"github.com/markfarnan/go-canvas/canvas"
-	"github.com/markfarnan/go-canvas/src/wasm/life"
+	"github.com/d-baranowski/webassembly-game-of-life/canvas"
+	"github.com/d-baranowski/webassembly-game-of-life/src/wasm/life"
 	"image/color"
 	"net/url"
 	"strconv"
