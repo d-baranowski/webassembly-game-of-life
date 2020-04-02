@@ -68,6 +68,14 @@ func NewCanvas2d(create bool) (*Canvas2d, error) {
 	return &c, nil
 }
 
+func (c *Canvas2d) SetImage(img *image.RGBA) {
+	c.image = img
+}
+
+func (c *Canvas2d) GetBuffer() *image.RGBA {
+	return c.image
+}
+
 // Create a new Canvas in the DOM, and append it to the Body.
 // This also calls Set to create relevant shadow Buffer etc
 
