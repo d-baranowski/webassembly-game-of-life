@@ -22,6 +22,7 @@ const BOTTOM = 4
 const BOTTOM_LEFT = 5
 const LEFT = 6
 const TOP_LEFT = 7
+var CELL_COLOR = color.RGBA{0, 153, 51, 0xff}
 
 type Link struct {
 	value *Cell
@@ -189,19 +190,19 @@ func(l *Life) Draw(img *image.RGBA) *image.RGBA {
 
 	topLeft := l.grid
 	if topLeft.alive {
-		img.Set(int(topLeft.X), int(topLeft.Y), color.Black)
+		img.Set(int(topLeft.X), int(topLeft.Y), CELL_COLOR)
 	}
 
 	row := topLeft.neighbours[BOTTOM]
 	for i := 0; i < l.h; i++ {
 		if row.alive {
-			img.Set(int(row.X), int(row.Y), color.Black)
+			img.Set(int(row.X), int(row.Y), CELL_COLOR)
 		}
 
 		cell := row.neighbours[RIGHT]
 		for j := 0; j < l.w; j++ {
 			if cell.alive {
-				img.Set(int(cell.X), int(cell.Y), color.Black)
+				img.Set(int(cell.X), int(cell.Y), CELL_COLOR)
 			}
 
 			cell = cell.neighbours[RIGHT]

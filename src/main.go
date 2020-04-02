@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
+	"github.com/llgcode/draw2d/draw2dimg"
+	"github.com/markfarnan/go-canvas/canvas"
 	"github.com/markfarnan/go-canvas/src/wasm/life"
+	"image/color"
 	"net/url"
 	"strconv"
 	"syscall/js"
 	"time"
-
-	"github.com/llgcode/draw2d/draw2dimg"
-	"github.com/markfarnan/go-canvas/canvas"
 )
 
 var done chan struct{}
@@ -44,15 +44,8 @@ func main() {
 	<-done
 }
 
-// Helper function which calls the required func (in this case 'render') every time.Duration,  Call as a go-routine to prevent blocking, as this never returns
-func doEvery(d time.Duration, f func(time.Time)) {
-	for x := range time.Tick(d) {
-		f(x)
-	}
-}
-
-// Called from the 'requestAnnimationFrame' function.   It may also be called seperatly from a 'doEvery' function, if the user prefers drawing to be seperate from the annimationFrame callback
-func Render(gc *draw2dimg.GraphicContext) bool {
+func update(gc *draw2dimg.GraphicContext) {
+	gc.Current.FillColor = color.Black
 	gc.Clear()
 
 	start := time.Now()
@@ -69,6 +62,11 @@ func Render(gc *draw2dimg.GraphicContext) bool {
 	cvs.SetImage(generatedImg)
 	elapsed = time.Since(start).Milliseconds()
 	println(fmt.Sprintf("Draw Duration %d ms", elapsed))
+}
+
+// Called from the 'requestAnnimationFrame' function.   It may also be called seperatly from a 'doEvery' function, if the user prefers drawing to be seperate from the annimationFrame callback
+func Render(gc *draw2dimg.GraphicContext) bool {
+	go update(gc)
 
 	return true
 }
